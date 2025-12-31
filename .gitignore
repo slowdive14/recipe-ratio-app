@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+
+# PWA
+public/sw.js
+public/workbox-*.js
+public/worker-*.js

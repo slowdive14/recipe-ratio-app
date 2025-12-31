@@ -107,13 +107,14 @@ export default function IngredientForm({
           {ingredients.map((ingredient) => (
             <div
               key={ingredient.id}
-              className="flex items-center gap-3 p-3 bg-white rounded-xl"
+              className="flex items-center gap-2 p-3 bg-white rounded-xl shadow-sm border border-transparent hover:border-[#FFEEE8] transition-all"
             >
               {/* Delete Button */}
               <button
                 type="button"
                 onClick={() => removeIngredient(ingredient.id)}
-                className="w-8 h-8 flex items-center justify-center bg-[#FDEDEC] text-[#E74C3C] rounded-full text-lg font-bold hover:bg-[#FADBD8] transition-all"
+                className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#FDEDEC] text-[#E74C3C] rounded-full text-lg font-bold hover:bg-[#FADBD8] transition-all active:scale-95"
+                aria-label="재료 삭제"
               >
                 -
               </button>
@@ -123,25 +124,31 @@ export default function IngredientForm({
                 type="text"
                 value={ingredient.name}
                 onChange={(e) => updateIngredientName(ingredient.id, e.target.value)}
-                placeholder="재료명"
-                className="flex-1 px-3 py-2 bg-transparent font-['Gowun_Dodum'] text-[#333333] placeholder:text-gray-400 focus:outline-none"
+                placeholder="재료명 (예: 밀가루)"
+                className="flex-1 min-w-0 px-2 py-2 bg-transparent font-['Gowun_Dodum'] text-[#333333] placeholder:text-gray-400 focus:outline-none text-base"
               />
 
               {/* Amount & Unit Button */}
               <button
                 type="button"
                 onClick={() => openUnitSelector(ingredient)}
-                className="flex items-center gap-1 px-3 py-2 bg-[#F5F6FA] rounded-lg font-['Gowun_Dodum'] text-[#666666] hover:bg-[#E8F5EE] transition-all"
+                className={`flex-shrink-0 flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-['Gowun_Dodum'] transition-all border ${ingredient.amount > 0 || ingredient.fraction
+                    ? 'bg-[#E8F5EE] text-[#27AE60] border-[#27AE60]/20'
+                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
+                  }`}
               >
-                <span>
+                <span className="text-sm font-bold truncate max-w-[100px]">
                   {ingredient.amount > 0 || ingredient.fraction
                     ? `${formatIngredientAmount(ingredient.amount, ingredient.fraction)} ${ingredient.unit}`
-                    : '0'}
+                    : '수량 입력'}
                 </span>
+                {(ingredient.amount === 0 && !ingredient.fraction) && (
+                  <span className="text-xs">✏️</span>
+                )}
               </button>
 
-              {/* Drag Handle */}
-              <span className="text-gray-300 cursor-move">≡</span>
+              {/* Drag Handle - Hidden on very small screens if needed, or keep minimal */}
+              <span className="text-gray-300 cursor-move flex-shrink-0 px-1">≡</span>
             </div>
           ))}
         </div>

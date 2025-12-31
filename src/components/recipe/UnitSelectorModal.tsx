@@ -86,9 +86,13 @@ export default function UnitSelectorModal({
           </button>
           <input
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(Math.max(0, parseInt(e.target.value) || 0))}
-            className="w-20 text-center text-2xl font-['Jua'] text-[#333333] bg-white rounded-xl py-2 border-2 border-gray-200 focus:outline-none focus:border-[#27AE60]"
+            value={amount === 0 ? '' : amount}
+            onChange={(e) => {
+              const val = e.target.value;
+              setAmount(val === '' ? 0 : parseInt(val) || 0);
+            }}
+            placeholder="0"
+            className="w-20 text-center text-2xl font-['Jua'] text-[#333333] bg-white rounded-xl py-2 border-2 border-gray-200 focus:outline-none focus:border-[#27AE60] placeholder:text-gray-300"
           />
           <button
             onClick={incrementAmount}
@@ -102,11 +106,10 @@ export default function UnitSelectorModal({
         <div className="flex flex-wrap justify-center gap-2 mb-4">
           <button
             onClick={() => setFraction('')}
-            className={`px-4 py-2 rounded-lg font-['Jua'] text-sm transition-all ${
-              fraction === ''
+            className={`px-4 py-2 rounded-lg font-['Jua'] text-sm transition-all ${fraction === ''
                 ? 'bg-[#E67E22] text-white'
                 : 'bg-white text-[#666666] hover:bg-[#FFEEE8]'
-            }`}
+              }`}
           >
             없음
           </button>
@@ -114,11 +117,10 @@ export default function UnitSelectorModal({
             <button
               key={f.value}
               onClick={() => setFraction(f.value)}
-              className={`w-12 h-10 rounded-lg font-['Jua'] text-lg transition-all ${
-                fraction === f.value
+              className={`w-12 h-10 rounded-lg font-['Jua'] text-lg transition-all ${fraction === f.value
                   ? 'bg-[#FFF8E7] text-[#D68910] border-2 border-[#D68910]'
                   : 'bg-white text-[#666666] hover:bg-[#FFF8E7]'
-              }`}
+                }`}
             >
               {f.label}
             </button>
@@ -131,11 +133,10 @@ export default function UnitSelectorModal({
             <button
               key={u.value}
               onClick={() => setUnit(u.value)}
-              className={`px-4 py-2 rounded-lg font-['Jua'] text-sm transition-all ${
-                unit === u.value
+              className={`px-4 py-2 rounded-lg font-['Jua'] text-sm transition-all ${unit === u.value
                   ? `${u.color} border-2 border-current`
                   : 'bg-white text-[#666666] hover:bg-[#F5F6FA]'
-              }`}
+                }`}
             >
               {u.label}
             </button>

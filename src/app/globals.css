@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+:root {
+  /* Clean Pastel Color Palette - 참고 이미지 기반 */
+  --color-bg: #F5F6FA;
+  --color-white: #FFFFFF;
+
+  /* Card Colors */
+  --color-peach: #FFEEE8;
+  --color-peach-light: #FFF5F2;
+  --color-peach-dark: #FFD4C4;
+  --color-yellow: #FFF8E7;
+  --color-yellow-light: #FFFBF0;
+  --color-yellow-dark: #FFE9B8;
+  --color-mint: #E8F5EE;
+  --color-mint-light: #F2FAF5;
+  --color-mint-dark: #C5E8D4;
+  --color-lavender: #EDE8F5;
+  --color-lavender-light: #F5F2FA;
+  --color-lavender-dark: #D8CFF0;
+
+  /* Text Colors */
+  --color-text: #333333;
+  --color-text-orange: #E67E22;
+  --color-text-green: #27AE60;
+  --color-text-purple: #8E44AD;
+  --color-text-light: #666666;
+  --color-text-muted: #999999;
+
+  /* Accent Colors */
+  --color-accent-orange: #F39C12;
+  --color-accent-green: #2ECC71;
+  --color-accent-purple: #9B59B6;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Border Radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+}
+
+/* Base Styles - 밝고 깔끔한 배경 */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Gowun Dodum', sans-serif;
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Jua', sans-serif;
+  color: var(--color-text-orange);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes loading-bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 0.4s ease-in-out;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+/* Staggered Animation Delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D0D0D0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B0B0B0;
+}
+
+/* Selection Color */
+::selection {
+  background: var(--color-peach);
+  color: var(--color-text);
+}
+
+/* Loading Animation */
+.loading-cute {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-cute span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: loading-bounce 0.5s ease-in-out infinite alternate;
+}
+
+.loading-cute span:nth-child(1) {
+  background: var(--color-accent-orange);
+  animation-delay: 0s;
+}
+
+.loading-cute span:nth-child(2) {
+  background: var(--color-accent-green);
+  animation-delay: 0.15s;
+}
+
+.loading-cute span:nth-child(3) {
+  background: var(--color-accent-purple);
+  animation-delay: 0.3s;
+}
+
+/* Empty State Styling */
+.empty-state-cute {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  border: 2px dashed #E0E0E0;
+}

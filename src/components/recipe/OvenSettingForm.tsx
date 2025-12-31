@@ -16,7 +16,7 @@ export default function OvenSettingForm({ settings, onChange }: OvenSettingFormP
       id: generateId(),
       type: 'heat',
       temperature: 200,
-      duration: 30,
+      duration: 10,
     };
     onChange([...settings, newSetting]);
   };
@@ -68,51 +68,100 @@ export default function OvenSettingForm({ settings, onChange }: OvenSettingFormP
           {settings.map((setting, index) => (
             <div
               key={setting.id}
-              className="flex items-end gap-3 p-4 bg-gray-50 rounded-lg"
+              className="flex flex-col gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100"
             >
-              <div className="w-20">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  단계 {index + 1}
-                </label>
-                <span className="inline-block px-2 py-1 text-sm rounded bg-white border">
-                  {setting.type === 'preheat' ? '예열' : '가열'}
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-gray-700">
+                    단계 {index + 1}
+                  </span>
+                  <span className={`px-2 py-0.5 text-xs rounded-full font-bold ${setting.type === 'preheat'
+                    ? 'bg-orange-100 text-orange-600'
+                    : 'bg-green-100 text-green-600'
+                    }`}>
+                    {setting.type === 'preheat' ? '예열' : '가열'}
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => removeSetting(setting.id)}
+                  className="!p-1.5 h-auto bg-transparent hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-lg transition-colors"
+                >
+                  <span className="text-sm">🗑️</span>
+                </Button>
               </div>
 
-              <div className="flex-1">
-                <Input
-                  type="number"
-                  label="온도 (°C)"
-                  value={setting.temperature}
-                  onChange={(e) =>
-                    updateSetting(setting.id, 'temperature', parseInt(e.target.value) || 0)
-                  }
-                  min={0}
-                  max={300}
-                  step={5}
-                />
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Temperature Control */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-600 mb-2">온도 (°C)</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateSetting(setting.id, 'temperature', Math.max(0, setting.temperature - 5))}
+                      className="w-12 h-12 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl text-xl text-gray-400 hover:text-[#E67E22] hover:border-[#E67E22] active:bg-orange-50 transition-all font-bold"
+                    >
+                      -
+                    </button>
+                    <div className="flex-1 relative">
+                      <Input
+                        type="number"
+                        value={setting.temperature || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateSetting(setting.id, 'temperature', val === '' ? 0 : parseInt(val) || 0);
+                        }}
+                        placeholder="0"
+                        min={0}
+                        max={300}
+                        className="text-center text-lg font-bold !px-0"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateSetting(setting.id, 'temperature', Math.min(300, setting.temperature + 5))}
+                      className="w-12 h-12 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl text-xl text-gray-400 hover:text-[#E67E22] hover:border-[#E67E22] active:bg-orange-50 transition-all font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
 
-              <div className="flex-1">
-                <Input
-                  type="number"
-                  label="시간 (분)"
-                  value={setting.duration}
-                  onChange={(e) =>
-                    updateSetting(setting.id, 'duration', parseInt(e.target.value) || 0)
-                  }
-                  min={0}
-                />
+                {/* Duration Control */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-600 mb-2">시간 (분)</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateSetting(setting.id, 'duration', Math.max(0, setting.duration - 5))}
+                      className="w-12 h-12 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl text-xl text-gray-400 hover:text-[#E67E22] hover:border-[#E67E22] active:bg-orange-50 transition-all font-bold"
+                    >
+                      -
+                    </button>
+                    <div className="flex-1 relative">
+                      <Input
+                        type="number"
+                        value={setting.duration || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateSetting(setting.id, 'duration', val === '' ? 0 : parseInt(val) || 0);
+                        }}
+                        placeholder="0"
+                        min={0}
+                        className="text-center text-lg font-bold !px-0"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateSetting(setting.id, 'duration', setting.duration + 5)}
+                      className="w-12 h-12 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl text-xl text-gray-400 hover:text-[#E67E22] hover:border-[#E67E22] active:bg-orange-50 transition-all font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              <Button
-                type="button"
-                variant="danger"
-                size="sm"
-                onClick={() => removeSetting(setting.id)}
-              >
-                삭제
-              </Button>
             </div>
           ))}
         </div>

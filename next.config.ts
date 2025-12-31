@@ -4,7 +4,6 @@ import withPWAInit from "@ducanh2912/next-pwa";
 const withPWA = withPWAInit({
   dest: "public",
   register: true,
-  skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
   cacheOnFrontEndNav: true,
   reloadOnOnline: true,
@@ -12,6 +11,8 @@ const withPWA = withPWAInit({
     document: "/offline",
   },
   workboxOptions: {
+    skipWaiting: true,
+    clientsClaim: true,
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/fonts\.(?:gstatic|googleapis)\.com\/.*/i,

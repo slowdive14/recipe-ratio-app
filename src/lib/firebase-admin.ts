@@ -4,7 +4,7 @@ import { getStorage, Storage } from 'firebase-admin/storage';
 let app: App | undefined;
 let storage: Storage | undefined;
 
-function getFirebaseAdminApp(): App {
+export function getFirebaseAdminApp(): App {
   if (app) return app;
 
   const apps = getApps();

@@ -45,7 +45,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-screen bg-[#F5F6FA] text-[#333333]">
-        <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5ONxIi7650uEimaM6TtzKtCMl18IPTeSMmkFDKqt6IqdB8dG" crossOrigin="anonymous"></script>
+        <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" async></script>
         <Navigation />
         <main className="pb-12">{children}</main>
         <UpdateNotification />

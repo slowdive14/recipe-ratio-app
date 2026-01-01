@@ -1,22 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirebaseAdminApp } from '@/lib/firebase-admin';
-
 export async function POST(req: NextRequest) {
     // Initialize Admin App lazily
     getFirebaseAdminApp();
 
     try {
-        const { accessToken } = await req.json();
+        const { accessToken, code } = await req.json();
+        let kakaoAccessToken = accessToken;
 
-        if (!accessToken) {
-            return NextResponse.json({ error: 'Access token required' }, { status: 400 });
+        // If authorization code provided, exchange for access token
+        if (code) {
+            const tokenResponse = await fetch('https://kapi.kakao.com/oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY!,
+                    redirect_uri: `${req.headers.get('origin')}/auth/kakao/callback`,
+                    code: code,
+                }),
+            });
+
+            if (!tokenResponse.ok) {
+                const err = await tokenResponse.json();
+                console.error('Kakao Token Exchange Error:', err);
+                return NextResponse.json({ error: 'Failed to exchange token' }, { status: 400 });
+            }
+
+            const tokenData = await tokenResponse.json();
+            kakaoAccessToken = tokenData.access_token;
         }
 
-        // 1. Verify token with Kakao
+        if (!kakaoAccessToken) {
+            return NextResponse.json({ error: 'Access token or code required' }, { status: 400 });
+        }
+
+        // 1. Verify token with Kakao (Get User Info)
         const kakaoResponse = await fetch('https://kapi.kakao.com/v2/user/me', {
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${kakaoAccessToken}`,
             },
         });
 

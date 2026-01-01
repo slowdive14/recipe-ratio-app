@@ -60,35 +60,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             }
         }
 
-        window.Kakao.Auth.login({
-            success: async function (authObj: any) {
-                try {
-                    // Send access token to our API
-                    const response = await fetch('/api/auth/kakao', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ accessToken: authObj.access_token }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('서버 인증 실패');
-                    }
-
-                    const { firebaseCustomToken } = await response.json();
-                    const auth = getAuth();
-                    await signInWithCustomToken(auth, firebaseCustomToken);
-                    onClose();
-                } catch (err: any) {
-                    setError(err.message || '로그인 처리 중 오류 발생');
-                } finally {
-                    setLoading(false);
-                }
-            },
-            fail: function (err: any) {
-                setError('카카오 로그인 창이 닫혔거나 오류가 발생했습니다.');
-                setLoading(false);
-                console.error(err);
-            },
+        // SDK v2 uses authorize() which redirects to Kakao login page
+        // After login, Kakao will redirect back to our redirectUri with an authorization code
+        window.Kakao.Auth.authorize({
+            redirectUri: `${window.location.origin}/auth/kakao/callback`,
+            scope: 'profile_nickname,profile_image,account_email',
         });
     };
 

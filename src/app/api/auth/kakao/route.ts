@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 
-// Initialize Admin App
-getFirebaseAdminApp();
-
 export async function POST(req: NextRequest) {
+    // Initialize Admin App lazily
+    getFirebaseAdminApp();
+
     try {
         const { accessToken } = await req.json();
 

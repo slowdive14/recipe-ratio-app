@@ -1,7 +1,7 @@
 'use server';
 
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { generateObject } from 'ai';
+import { generateObject, APICallError } from 'ai';
 import { z } from 'zod';
 import { IngredientUnit, FractionValue } from '@/types';
 
@@ -87,7 +87,7 @@ export async function extractRecipeFromImage(
           content: [
             {
               type: 'image',
-              image: `data:${mimeType};base64,${imageBase64}`,
+              image: new URL(`data:${mimeType};base64,${imageBase64}`),
             },
             {
               type: 'text',
@@ -145,12 +145,49 @@ export async function extractRecipeFromImage(
     };
   } catch (error) {
     console.error('Error extracting recipe from image:', error);
+
+    if (error instanceof APICallError) {
+      const status = error.statusCode;
+
+      if (status === 401 || status === 403) {
+        return {
+          success: false,
+          error: 'API 키가 올바르지 않거나 권한이 없습니다. Google AI Studio에서 키를 확인해주세요.',
+        };
+      }
+
+      if (status === 429) {
+        return {
+          success: false,
+          error: '무료 사용량을 초과했습니다. 잠시 후 다시 시도해주세요.',
+        };
+      }
+
+      if (status === 400) {
+        return {
+          success: false,
+          error: '이미지 형식이 올바르지 않습니다. 다른 이미지를 시도해주세요.',
+        };
+      }
+
+      return {
+        success: false,
+        error: `API 오류가 발생했습니다. (${status ?? 'unknown'})`,
+      };
+    }
+
+    const errorMessage = error instanceof Error ? error.message : '';
+    
+    if (errorMessage.includes('No object generated')) {
+      return {
+        success: false,
+        error: '이미지에서 레시피 정보를 추출할 수 없습니다. 레시피가 명확하게 보이는 이미지를 사용해주세요.',
+      };
+    }
+
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : '레시피 추출 중 오류가 발생했습니다.',
+      error: errorMessage || '레시피 추출 중 오류가 발생했습니다.',
     };
   }
 }

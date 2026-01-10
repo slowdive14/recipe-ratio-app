@@ -86,7 +86,13 @@ export default function RecipeScanner({
         setError(result.error || '레시피 추출에 실패했습니다.');
       }
     } catch (err) {
-      setError('레시피 분석 중 오류가 발생했습니다.');
+      console.error('handleAnalyze error:', err);
+      const errorMessage = err instanceof Error ? err.message : '';
+      if (errorMessage.includes('fetch')) {
+        setError('네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+      } else {
+        setError(errorMessage || '레시피 분석 중 오류가 발생했습니다.');
+      }
     } finally {
       setAnalyzing(false);
     }

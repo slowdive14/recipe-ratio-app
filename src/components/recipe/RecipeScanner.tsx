@@ -28,12 +28,11 @@ export default function RecipeScanner({
   const [hasApiKey, setHasApiKey] = useState(false);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     setHasApiKey(hasGeminiApiKey());
   }, []);
-
-  const [activeInputRef, setActiveInputRef] = useState<React.RefObject<HTMLInputElement | null> | null>(null);
 
   const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -52,7 +51,7 @@ export default function RecipeScanner({
       return;
     }
 
-    setActiveInputRef(e.target === cameraInputRef.current ? cameraInputRef : galleryInputRef);
+    setSelectedFile(file);
     const localPreview = URL.createObjectURL(file);
     setPreview(localPreview);
   };
@@ -70,15 +69,14 @@ export default function RecipeScanner({
     setError(null);
 
     try {
-      const file = activeInputRef?.current?.files?.[0];
-      if (!file) {
+      if (!selectedFile) {
         setError('파일을 찾을 수 없습니다.');
         setAnalyzing(false);
         return;
       }
 
-      const base64 = await fileToBase64(file);
-      const result = await extractRecipeFromImage(base64, file.type, apiKey);
+      const base64 = await fileToBase64(selectedFile);
+      const result = await extractRecipeFromImage(base64, selectedFile.type, apiKey);
 
       if (result.success && result.recipe) {
         onRecipeExtracted(result.recipe);
@@ -101,7 +99,7 @@ export default function RecipeScanner({
   const handleReset = () => {
     setPreview(null);
     setError(null);
-    setActiveInputRef(null);
+    setSelectedFile(null);
     if (cameraInputRef.current) {
       cameraInputRef.current.value = '';
     }

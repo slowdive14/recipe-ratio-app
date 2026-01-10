@@ -46,8 +46,8 @@ export default function RecipeScanner({
       return;
     }
 
-    if (file.size > 7 * 1024 * 1024) {
-      setError('파일 크기는 7MB 이하여야 합니다.');
+    if (file.size > 4 * 1024 * 1024) {
+      setError('파일 크기는 4MB 이하여야 합니다. 다른 이미지를 선택해주세요.');
       return;
     }
 
@@ -260,7 +260,7 @@ export default function RecipeScanner({
                   </button>
                 </div>
                 <p className="text-xs text-center text-gray-400 font-['Gowun_Dodum']">
-                  JPG, PNG, WEBP (최대 7MB)
+                  JPG, PNG, WEBP (최대 4MB)
                 </p>
               </div>
             )}

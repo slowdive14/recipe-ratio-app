@@ -40,20 +40,25 @@ export default function RecipeScanner({
 
     setError(null);
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'];
     if (!validTypes.includes(file.type)) {
-      setError('JPG, PNG, GIF, WEBP 파일만 업로드 가능합니다.');
+      setError('JPG, PNG, GIF, WEBP, HEIC 파일만 업로드 가능합니다.');
       return;
     }
 
-    if (file.size > 4 * 1024 * 1024) {
-      setError('파일 크기는 4MB 이하여야 합니다. 다른 이미지를 선택해주세요.');
+    if (file.size > 20 * 1024 * 1024) {
+      setError('파일 크기는 20MB 이하여야 합니다.');
       return;
     }
 
-    setSelectedFile(file);
-    const localPreview = URL.createObjectURL(file);
-    setPreview(localPreview);
+    try {
+      const compressedFile = await compressImage(file);
+      setSelectedFile(compressedFile);
+      const localPreview = URL.createObjectURL(compressedFile);
+      setPreview(localPreview);
+    } catch {
+      setError('이미지 처리 중 오류가 발생했습니다.');
+    }
   };
 
   const handleAnalyze = async () => {
@@ -188,7 +193,7 @@ export default function RecipeScanner({
             <input
               ref={cameraInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
+              accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif"
               capture="environment"
               onChange={handleFileSelect}
               className="hidden"
@@ -197,7 +202,7 @@ export default function RecipeScanner({
             <input
               ref={galleryInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
+              accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif"
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -303,5 +308,58 @@ function fileToBase64(file: File): Promise<string> {
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
+  });
+}
+
+async function compressImage(file: File): Promise<File> {
+  const MAX_SIZE = 1024;
+  const TARGET_QUALITY = 0.8;
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+
+      if (width > MAX_SIZE || height > MAX_SIZE) {
+        if (width > height) {
+          height = (height / width) * MAX_SIZE;
+          width = MAX_SIZE;
+        } else {
+          width = (width / height) * MAX_SIZE;
+          height = MAX_SIZE;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Canvas context not available'));
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Failed to compress image'));
+            return;
+          }
+          const compressedFile = new File([blob], file.name, {
+            type: 'image/jpeg',
+            lastModified: Date.now(),
+          });
+          resolve(compressedFile);
+        },
+        'image/jpeg',
+        TARGET_QUALITY
+      );
+    };
+
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
   });
 }

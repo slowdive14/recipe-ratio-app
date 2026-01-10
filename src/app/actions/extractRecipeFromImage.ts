@@ -87,7 +87,7 @@ export async function extractRecipeFromImage(
           content: [
             {
               type: 'image',
-              image: new URL(`data:${mimeType};base64,${imageBase64}`),
+              image: `data:${mimeType};base64,${imageBase64}`,
             },
             {
               type: 'text',

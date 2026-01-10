@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Navigation } from "@/components/layout";
-import { UpdateNotification } from "@/components/ui/UpdateNotification";
 
 export const metadata: Metadata = {
   title: "레시피 비율 계산기",
@@ -48,7 +47,6 @@ export default function RootLayout({
         <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" async></script>
         <Navigation />
         <main className="pb-12">{children}</main>
-        <UpdateNotification />
       </body>
     </html>
   );

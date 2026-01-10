@@ -15,6 +15,7 @@ interface CategoryState {
   addCategory: (input: CategoryInput) => Promise<void>;
   removeCategory: (id: string) => Promise<void>;
   editCategory: (id: string, input: CategoryInput) => Promise<void>;
+  reset: () => void;
 }
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
@@ -63,4 +64,6 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       set({ error: (error as Error).message, loading: false });
     }
   },
+
+  reset: () => set({ categories: [], loading: false, error: null }),
 }));

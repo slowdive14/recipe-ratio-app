@@ -40,6 +40,7 @@ export interface Recipe {
   name: string;
   description: string;
   categoryId: string;
+  userId: string;
   imageUrl: string;
   servings: number;
   ovenSettings: OvenSetting[];

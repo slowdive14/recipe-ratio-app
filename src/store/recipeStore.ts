@@ -21,6 +21,7 @@ interface RecipeState {
   removeRecipe: (id: string) => Promise<void>;
   setSelectedCategoryId: (categoryId: string | null) => void;
   clearCurrentRecipe: () => void;
+  reset: () => void;
 }
 
 export const useRecipeStore = create<RecipeState>((set, get) => ({
@@ -89,4 +90,6 @@ export const useRecipeStore = create<RecipeState>((set, get) => ({
   clearCurrentRecipe: () => {
     set({ currentRecipe: null });
   },
+
+  reset: () => set({ recipes: [], currentRecipe: null, loading: false, error: null, selectedCategoryId: null }),
 }));

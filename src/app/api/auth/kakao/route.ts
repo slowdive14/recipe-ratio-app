@@ -1,3 +1,7 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirebaseAdminApp } from '@/lib/firebase-admin';
+
 export async function POST(req: NextRequest) {
     // Initialize Admin App lazily
     getFirebaseAdminApp();
@@ -6,9 +10,10 @@ export async function POST(req: NextRequest) {
         const { accessToken, code } = await req.json();
         let kakaoAccessToken = accessToken;
 
+
         // If authorization code provided, exchange for access token
         if (code) {
-            const tokenResponse = await fetch('https://kapi.kakao.com/oauth/token', {
+            const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',

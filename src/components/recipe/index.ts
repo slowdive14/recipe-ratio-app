@@ -6,3 +6,4 @@ export { default as IngredientForm } from './IngredientForm';
 export { default as RatioSelector } from './RatioSelector';
 export { default as ScaledIngredientList } from './ScaledIngredientList';
 export { default as ImageUploader } from './ImageUploader';
+export { default as RecipeScanner } from './RecipeScanner';

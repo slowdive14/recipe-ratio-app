@@ -8,17 +8,24 @@ import {
   Timestamp,
   query,
   orderBy,
+  where,
 } from 'firebase/firestore';
-import { getDb } from './firebase';
+import { getDb, getAuth } from './firebase';
 import { Category, CategoryInput } from '@/types';
 import { FIREBASE_COLLECTIONS } from './constants';
 
 export async function createCategory(input: CategoryInput): Promise<string> {
+  const auth = getAuth();
+  if (!auth.currentUser) {
+    throw new Error('로그인이 필요합니다');
+  }
+
   const db = getDb();
   const now = Timestamp.now();
 
   const docRef = await addDoc(collection(db, FIREBASE_COLLECTIONS.CATEGORIES), {
     name: input.name,
+    userId: auth.currentUser.uid,
     createdAt: now,
     updatedAt: now,
   });
@@ -27,9 +34,15 @@ export async function createCategory(input: CategoryInput): Promise<string> {
 }
 
 export async function getCategories(): Promise<Category[]> {
+  const auth = getAuth();
+  if (!auth.currentUser) {
+    return [];
+  }
+
   const db = getDb();
   const q = query(
     collection(db, FIREBASE_COLLECTIONS.CATEGORIES),
+    where('userId', '==', auth.currentUser.uid),
     orderBy('createdAt', 'desc')
   );
 

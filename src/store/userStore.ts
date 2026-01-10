@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { getAuth } from '@/lib/firebase';
+import { useCategoryStore } from './categoryStore';
+import { useRecipeStore } from './recipeStore';
 
 interface UserState {
     user: User | null;
@@ -36,6 +38,8 @@ export const useUserStore = create<UserState>((set) => ({
         try {
             const auth = getAuth();
             await firebaseSignOut(auth);
+            useCategoryStore.getState().reset();
+            useRecipeStore.getState().reset();
             set({ user: null });
         } catch (error) {
             set({ error: (error as Error).message });

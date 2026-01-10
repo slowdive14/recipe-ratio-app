@@ -11,16 +11,22 @@ import {
   orderBy,
   where,
 } from 'firebase/firestore';
-import { getDb } from './firebase';
+import { getDb, getAuth } from './firebase';
 import { Recipe, RecipeInput } from '@/types';
 import { FIREBASE_COLLECTIONS } from './constants';
 
 export async function createRecipe(input: RecipeInput): Promise<string> {
+  const auth = getAuth();
+  if (!auth.currentUser) {
+    throw new Error('로그인이 필요합니다');
+  }
+
   const db = getDb();
   const now = Timestamp.now();
 
   const docRef = await addDoc(collection(db, FIREBASE_COLLECTIONS.RECIPES), {
     ...input,
+    userId: auth.currentUser.uid,
     createdAt: now,
     updatedAt: now,
   });
@@ -29,18 +35,25 @@ export async function createRecipe(input: RecipeInput): Promise<string> {
 }
 
 export async function getRecipes(categoryId?: string): Promise<Recipe[]> {
+  const auth = getAuth();
+  if (!auth.currentUser) {
+    return [];
+  }
+
   const db = getDb();
   let q;
 
   if (categoryId) {
     q = query(
       collection(db, FIREBASE_COLLECTIONS.RECIPES),
+      where('userId', '==', auth.currentUser.uid),
       where('categoryId', '==', categoryId),
       orderBy('createdAt', 'desc')
     );
   } else {
     q = query(
       collection(db, FIREBASE_COLLECTIONS.RECIPES),
+      where('userId', '==', auth.currentUser.uid),
       orderBy('createdAt', 'desc')
     );
   }

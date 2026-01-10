@@ -9,7 +9,7 @@ export default function Home() {
   const { recipes, fetchRecipes, removeRecipe } = useRecipeStore();
 
   useEffect(() => {
-    fetchRecipes();
+    fetchRecipes(undefined);
   }, [fetchRecipes]);
 
   const recentRecipes = recipes.slice(0, 6);

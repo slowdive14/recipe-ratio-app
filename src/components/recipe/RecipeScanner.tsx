@@ -26,11 +26,14 @@ export default function RecipeScanner({
   const [error, setError] = useState<string | null>(null);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setHasApiKey(hasGeminiApiKey());
   }, []);
+
+  const [activeInputRef, setActiveInputRef] = useState<React.RefObject<HTMLInputElement | null> | null>(null);
 
   const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -49,6 +52,7 @@ export default function RecipeScanner({
       return;
     }
 
+    setActiveInputRef(e.target === cameraInputRef.current ? cameraInputRef : galleryInputRef);
     const localPreview = URL.createObjectURL(file);
     setPreview(localPreview);
   };
@@ -66,7 +70,7 @@ export default function RecipeScanner({
     setError(null);
 
     try {
-      const file = fileInputRef.current?.files?.[0];
+      const file = activeInputRef?.current?.files?.[0];
       if (!file) {
         setError('파일을 찾을 수 없습니다.');
         setAnalyzing(false);
@@ -91,13 +95,21 @@ export default function RecipeScanner({
   const handleReset = () => {
     setPreview(null);
     setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    setActiveInputRef(null);
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = '';
+    }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
     }
   };
 
   const openCamera = () => {
-    fileInputRef.current?.click();
+    cameraInputRef.current?.click();
+  };
+
+  const openGallery = () => {
+    galleryInputRef.current?.click();
   };
 
   const handleApiKeySaved = () => {
@@ -160,11 +172,20 @@ export default function RecipeScanner({
               </button>
             </div>
 
+            {/* 카메라 입력 */}
             <input
-              ref={fileInputRef}
+              ref={cameraInputRef}
               type="file"
               accept="image/jpeg,image/png,image/gif,image/webp"
               capture="environment"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            {/* 갤러리 입력 */}
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -210,19 +231,33 @@ export default function RecipeScanner({
               </div>
             ) : (
               <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={openCamera}
-                  className="w-full h-48 border-3 border-dashed border-[#E67E22]/30 rounded-2xl flex flex-col items-center justify-center text-[#E67E22] hover:border-[#E67E22] hover:bg-[#FFF5EE] transition-all"
-                >
-                  <span className="text-5xl mb-3">📸</span>
-                  <span className="font-['Jua'] text-lg">
-                    탭하여 사진 촬영/선택
-                  </span>
-                  <span className="text-sm text-gray-400 font-['Gowun_Dodum'] mt-1">
-                    JPG, PNG, WEBP (최대 7MB)
-                  </span>
-                </button>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={openCamera}
+                    className="h-40 border-3 border-dashed border-[#E67E22]/30 rounded-2xl flex flex-col items-center justify-center text-[#E67E22] hover:border-[#E67E22] hover:bg-[#FFF5EE] transition-all"
+                  >
+                    <span className="text-4xl mb-2">📷</span>
+                    <span className="font-['Jua'] text-base">카메라</span>
+                    <span className="text-xs text-gray-400 font-['Gowun_Dodum'] mt-1">
+                      사진 촬영
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openGallery}
+                    className="h-40 border-3 border-dashed border-[#27AE60]/30 rounded-2xl flex flex-col items-center justify-center text-[#27AE60] hover:border-[#27AE60] hover:bg-[#E8F5EE] transition-all"
+                  >
+                    <span className="text-4xl mb-2">🖼️</span>
+                    <span className="font-['Jua'] text-base">갤러리</span>
+                    <span className="text-xs text-gray-400 font-['Gowun_Dodum'] mt-1">
+                      사진 선택
+                    </span>
+                  </button>
+                </div>
+                <p className="text-xs text-center text-gray-400 font-['Gowun_Dodum']">
+                  JPG, PNG, WEBP (최대 7MB)
+                </p>
               </div>
             )}
 

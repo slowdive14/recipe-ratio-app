@@ -85,12 +85,20 @@ export default function RecipeScanner({
       }
     } catch (err) {
       console.error('handleAnalyze error:', err);
-      const errorMessage = err instanceof Error ? err.message : '';
-      if (errorMessage.includes('fetch')) {
-        setError('네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+      
+      let errorDetail = '';
+      if (err instanceof Error) {
+        errorDetail = `[${err.name}] ${err.message}`;
+        if (err.stack) {
+          console.error('Stack:', err.stack);
+        }
+      } else if (typeof err === 'string') {
+        errorDetail = err;
       } else {
-        setError(errorMessage || '레시피 분석 중 오류가 발생했습니다.');
+        errorDetail = JSON.stringify(err);
       }
+      
+      setError(`오류: ${errorDetail || '알 수 없는 오류'}`);
     } finally {
       setAnalyzing(false);
     }

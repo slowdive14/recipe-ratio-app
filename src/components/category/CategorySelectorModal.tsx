@@ -93,12 +93,12 @@ export default function CategorySelectorModal({
             onChange={(e) => setNewCategoryName(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="새 카테고리 입력"
-            className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-['Gowun_Dodum'] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-[#27AE60]"
+            className="flex-1 min-w-0 px-4 py-3 border-2 border-gray-200 rounded-xl font-['Gowun_Dodum'] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-[#27AE60]"
           />
           <button
             onClick={handleAddCategory}
             disabled={!newCategoryName.trim() || isAdding}
-            className="w-12 h-12 flex items-center justify-center bg-[#27AE60] text-white rounded-xl text-2xl font-bold hover:bg-[#219A52] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-[#27AE60] text-white rounded-xl text-2xl font-bold hover:bg-[#219A52] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isAdding ? '...' : '+'}
           </button>

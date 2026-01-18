@@ -2,7 +2,7 @@
 
 import { useState, useRef, ChangeEvent } from 'react';
 import { Button } from '@/components/ui';
-import { uploadRecipeImage, isValidImageFile, isFileSizeValid } from '@/lib/storage';
+import { uploadImage } from '@/app/actions/uploadImage';
 
 interface ImageUploaderProps {
   currentImage?: string;
@@ -24,12 +24,13 @@ export default function ImageUploader({
 
     setError(null);
 
-    if (!isValidImageFile(file)) {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
       setError('JPG, PNG, GIF, WEBP 파일만 업로드 가능합니다.');
       return;
     }
 
-    if (!isFileSizeValid(file, 5)) {
+    if (file.size > 5 * 1024 * 1024) {
       setError('파일 크기는 5MB 이하여야 합니다.');
       return;
     }
@@ -39,9 +40,16 @@ export default function ImageUploader({
 
     setUploading(true);
     try {
-      const imageUrl = await uploadRecipeImage(file);
-      onImageChange(imageUrl);
-      setPreview(imageUrl);
+      const base64 = await fileToBase64(file);
+      const result = await uploadImage(base64, file.type);
+      
+      if (result.success && result.url) {
+        onImageChange(result.url);
+        setPreview(result.url);
+      } else {
+        setError(result.error || '이미지 업로드에 실패했습니다.');
+        setPreview(currentImage || null);
+      }
     } catch (err) {
       console.error('Image upload error:', err);
       const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류';
@@ -50,6 +58,19 @@ export default function ImageUploader({
     } finally {
       setUploading(false);
     }
+  };
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleRemove = () => {

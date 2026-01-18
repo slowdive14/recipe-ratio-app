@@ -3,14 +3,18 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useRecipeStore } from '@/store/recipeStore';
+import { useUserStore } from '@/store/userStore';
 import { RecipeCard } from '@/components/recipe';
 
 export default function Home() {
   const { recipes, fetchRecipes, removeRecipe } = useRecipeStore();
+  const { user, loading: authLoading } = useUserStore();
 
   useEffect(() => {
-    fetchRecipes(undefined);
-  }, [fetchRecipes]);
+    if (!authLoading && user) {
+      fetchRecipes(undefined);
+    }
+  }, [fetchRecipes, user, authLoading]);
 
   const recentRecipes = recipes.slice(0, 6);
 

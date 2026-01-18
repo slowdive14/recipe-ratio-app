@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRecipeStore } from '@/store/recipeStore';
 import { useCategoryStore } from '@/store/categoryStore';
+import { useUserStore } from '@/store/userStore';
 import RecipeCard from './RecipeCard';
 import { Button } from '@/components/ui';
 
@@ -18,14 +19,19 @@ export default function RecipeList() {
   } = useRecipeStore();
 
   const { categories, fetchCategories } = useCategoryStore();
+  const { user, loading: authLoading } = useUserStore();
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    if (!authLoading && user) {
+      fetchCategories();
+    }
+  }, [fetchCategories, user, authLoading]);
 
   useEffect(() => {
-    fetchRecipes(selectedCategoryId || undefined);
-  }, [fetchRecipes, selectedCategoryId]);
+    if (!authLoading && user) {
+      fetchRecipes(selectedCategoryId || undefined);
+    }
+  }, [fetchRecipes, selectedCategoryId, user, authLoading]);
 
   const handleDelete = async (id: string) => {
     await removeRecipe(id);

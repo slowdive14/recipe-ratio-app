@@ -98,7 +98,7 @@ export default function RecipeDetailPage({ params }: RecipeDetailPageProps) {
               <img
                 src={currentRecipe.imageUrl}
                 alt={currentRecipe.name}
-                className="w-full h-72 object-cover"
+                className="w-full h-48 md:h-64 object-cover"
               />
             </div>
           );

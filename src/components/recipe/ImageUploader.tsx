@@ -43,7 +43,9 @@ export default function ImageUploader({
       onImageChange(imageUrl);
       setPreview(imageUrl);
     } catch (err) {
-      setError('이미지 업로드에 실패했습니다.');
+      console.error('Image upload error:', err);
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류';
+      setError(`이미지 업로드에 실패했습니다: ${errorMessage}`);
       setPreview(currentImage || null);
     } finally {
       setUploading(false);

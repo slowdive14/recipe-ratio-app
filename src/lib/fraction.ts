@@ -34,15 +34,13 @@ export function formatAmount(totalAmount: number): { amount: number; fraction: F
 }
 
 export function formatIngredientAmount(amount: number, fraction: FractionValue): string {
-  const parts: string[] = [];
-
-  if (amount > 0) {
-    parts.push(amount.toString());
+  const total = getTotalAmount(amount, fraction);
+  
+  if (total === 0) return '0';
+  
+  if (Number.isInteger(total)) {
+    return total.toString();
   }
-
-  if (fraction) {
-    parts.push(fraction);
-  }
-
-  return parts.join(' ') || '0';
+  
+  return total.toFixed(1);
 }

@@ -42,17 +42,27 @@ export default function UnitSelectorModal({
   currentUnit,
   onConfirm,
 }: UnitSelectorModalProps) {
-  const [amount, setAmount] = useState(currentAmount);
+  const [amountStr, setAmountStr] = useState<string>(
+    currentAmount === 0 ? '' : String(currentAmount)
+  );
   const [fraction, setFraction] = useState<FractionValue>(currentFraction);
   const [unit, setUnit] = useState<IngredientUnit>(currentUnit);
 
+  const getNumericAmount = () => parseFloat(amountStr) || 0;
+
   const handleConfirm = () => {
-    onConfirm(amount, fraction, unit);
+    onConfirm(getNumericAmount(), fraction, unit);
     onClose();
   };
 
-  const incrementAmount = () => setAmount((prev) => prev + 1);
-  const decrementAmount = () => setAmount((prev) => Math.max(0, prev - 1));
+  const incrementAmount = () => {
+    const newVal = Math.round((getNumericAmount() + 1) * 10) / 10;
+    setAmountStr(String(newVal));
+  };
+  const decrementAmount = () => {
+    const newVal = Math.max(0, Math.round((getNumericAmount() - 1) * 10) / 10);
+    setAmountStr(newVal === 0 ? '' : String(newVal));
+  };
 
   if (!isOpen) return null;
 
@@ -85,11 +95,14 @@ export default function UnitSelectorModal({
             -
           </button>
           <input
-            type="number"
-            value={amount === 0 ? '' : amount}
+            type="text"
+            inputMode="decimal"
+            value={amountStr}
             onChange={(e) => {
               const val = e.target.value;
-              setAmount(val === '' ? 0 : parseInt(val) || 0);
+              if (val === '' || /^\d*\.?\d{0,1}$/.test(val)) {
+                setAmountStr(val);
+              }
             }}
             placeholder="0"
             className="w-20 text-center text-2xl font-['Jua'] text-[#333333] bg-white rounded-xl py-2 border-2 border-gray-200 focus:outline-none focus:border-[#27AE60] placeholder:text-gray-300"
